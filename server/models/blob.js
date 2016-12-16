@@ -6,5 +6,4 @@ var blobSchema = new Schema({
   lastName: String
 });
 
-
 module.exports = mongoose.model('blobs', blobSchema);

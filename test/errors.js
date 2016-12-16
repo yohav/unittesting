@@ -3,6 +3,7 @@
  */
 process.env.NODE_ENV = 'test';
 
+require('mocha-sinon');
 var chai = require('chai');
 var chaiHttp = require('chai-http');
 
@@ -11,7 +12,6 @@ var app, server;
 var Blob = require("../server/models/blob");
 var ObjectId = require('mongoose').Types.ObjectId;
 
-var sinon;
 var should = chai.should();
 chai.use(chaiHttp);
 
@@ -30,7 +30,6 @@ describe('Errors', function() {
     });
 
     beforeEach(function(done) {
-        sinon = require('sinon').sandbox.create();
         var newBlob = new Blob({
             name: 'Bat',
             lastName: 'man'
@@ -41,7 +40,6 @@ describe('Errors', function() {
     });
 
     afterEach(function(done){
-        sinon.restore();
         Blob.collection.drop();
         done();
     });
@@ -117,7 +115,7 @@ describe('Errors', function() {
     });
 
     it('should return Error on PUT /blob/{id} when cant save', function(done){
-        sinon.stub(require('mongoose').Model.prototype, "save", function(callback){
+        this.sinon.stub(require('mongoose').Model.prototype, "save", function(callback){
             callback({err: true});
         });
 
@@ -137,7 +135,7 @@ describe('Errors', function() {
     });
 
     it('should return Error on POST /blobs when cant save', function(done){
-        sinon.stub(require('mongoose').Model.prototype, "save", function(callback){
+        this.sinon.stub(require('mongoose').Model.prototype, "save", function(callback){
             callback({err: true});
         });
         chai.request(server)
@@ -152,7 +150,7 @@ describe('Errors', function() {
     });
 
     it('should return Error on GET /blobs when cant find', function(done){
-        sinon.stub(Blob, "find", function(callback){
+        this.sinon.stub(Blob, "find", function(callback){
             callback({err: true});
         });
         chai.request(server)
@@ -166,7 +164,7 @@ describe('Errors', function() {
     });
 
     it('should return Error on DELETE /blob/{id} when cant remove', function(done){
-        sinon.stub(require('mongoose').Model.prototype, "remove", function(callback){
+        this.sinon.stub(require('mongoose').Model.prototype, "remove", function(callback){
             callback({err: true});
         });
         chai.request(app)
